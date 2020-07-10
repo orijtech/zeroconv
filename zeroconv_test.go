@@ -59,3 +59,39 @@ func TestLengthBytesPrefixedToString(t *testing.T) {
 		t.Fatalf("Mismatch:\nGot:  %q\nWant: %q\n", got, src)
 	}
 }
+
+var sink interface{}
+
+func BenchmarkBytesToString_Library(b *testing.B) {
+	cases := [][]byte{
+		[]byte("when it rains it pours"),
+		[]byte("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for _, bs := range cases {
+			sink = BytesToString(bs)
+		}
+	}
+	if sink == nil {
+		b.Fatal("The benchmark was not run")
+	}
+}
+
+func BenchmarkBytesToString_Ordinary(b *testing.B) {
+	cases := [][]byte{
+		[]byte("when it rains it pours"),
+		[]byte("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for _, bs := range cases {
+			sink = string(bs)
+		}
+	}
+	if sink == nil {
+		b.Fatal("The benchmark was not run")
+	}
+}
